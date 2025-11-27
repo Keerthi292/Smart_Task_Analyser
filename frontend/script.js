@@ -62,7 +62,22 @@ document.getElementById("analyzeBtn").addEventListener("click", async () => {
 function showResults(results) {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
+
   results.forEach(r => {
+    // Determine urgency level
+    let urgency = "";
+    let color = "";
+    if (r.score >= 8) {
+      urgency = "High Urgency";
+      color = "#ff4d4f"; // red
+    } else if (r.score >= 5) {
+      urgency = "Medium Urgency";
+      color = "#faad14"; // orange
+    } else {
+      urgency = "Low Urgency";
+      color = "#52c41a"; // green
+    }
+
     tbody.innerHTML += `
       <tr>
         <td>${r.title}</td>
@@ -70,6 +85,7 @@ function showResults(results) {
         <td>${r.importance}</td>
         <td>${r.estimated_hours}</td>
         <td>${r.due_date || "-"}</td>
+        <td style="color:${color}; font-weight:bold">${urgency}</td>
       </tr>`;
   });
 }
