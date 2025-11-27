@@ -1,7 +1,16 @@
+# from django.urls import path
+# from .views import analyze_tasks, home
+
+# urlpatterns = [
+#     path('', home, name='home'),
+#     path('api/tasks/analyze/', analyze_tasks, name='analyze_tasks'),
+# ]
+
 from django.urls import path
-from .views import analyze_tasks, home
+from .views import analyze_tasks, get_saved_results, home
 
 urlpatterns = [
-    path("", home),              # 👈 this makes the homepage work
-    path("analyze/", analyze_tasks),
+    path('', home, name='home'),
+    path('api/tasks/analyze/', analyze_tasks),
+    path('api/tasks/results/', get_saved_results),
 ]

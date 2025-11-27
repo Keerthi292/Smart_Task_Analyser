@@ -1,5 +1,7 @@
-let tasks = [];
+let tasks = [];       // User-added tasks
+let resultsData = []; // Analyzed results
 
+// Add task
 document.getElementById("addBtn").addEventListener("click", () => {
   const title = document.getElementById("title").value;
   const importance = document.getElementById("importance").value || 5;
@@ -11,23 +13,17 @@ document.getElementById("addBtn").addEventListener("click", () => {
     return;
   }
 
-  tasks.push({
-    title,
-    importance,
-    estimated_hours: hours,
-    due_date: due
-  });
-
+  tasks.push({ title, importance, estimated_hours: hours, due_date: due });
   renderTasks();
   clearInputs();
 });
 
+// Render task list table
 function renderTasks() {
   const tbody = document.querySelector("#taskTable tbody");
   tbody.innerHTML = "";
   tasks.forEach(t => {
-    tbody.innerHTML += `
-      <tr>
+    tbody.innerHTML += `<tr>
         <td>${t.title}</td>
         <td>${t.importance}</td>
         <td>${t.estimated_hours}</td>
@@ -36,6 +32,7 @@ function renderTasks() {
   });
 }
 
+// Clear inputs
 function clearInputs() {
   document.getElementById("title").value = "";
   document.getElementById("importance").value = "";
@@ -43,6 +40,7 @@ function clearInputs() {
   document.getElementById("due").value = "";
 }
 
+// Analyze tasks
 document.getElementById("analyzeBtn").addEventListener("click", async () => {
   if (tasks.length === 0) {
     alert("Please add at least one task.");
@@ -56,32 +54,25 @@ document.getElementById("analyzeBtn").addEventListener("click", async () => {
   });
 
   const data = await response.json();
-  showResults(data.results);
+  resultsData = data.results; // store analysis results separately
+  renderResults();            // display in results table
 });
 
-function showResults(results) {
+function renderResults() {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
 
-  results.forEach(r => {
-    // Determine urgency level
-    let urgency = "";
+  resultsData.forEach(r => {
+    let urgency = r.priority || "";
     let color = "";
-    if (r.score >= 8) {
-      urgency = "High Urgency";
-      color = "#ff4d4f"; // red
-    } else if (r.score >= 5) {
-      urgency = "Medium Urgency";
-      color = "#faad14"; // orange
-    } else {
-      urgency = "Low Urgency";
-      color = "#52c41a"; // green
-    }
 
-    tbody.innerHTML += `
-      <tr>
+    if (urgency === "High Urgency") color = "#ff4d4f";
+    else if (urgency === "Medium Urgency") color = "#faad14";
+    else color = "#52c41a";
+
+    tbody.innerHTML += `<tr>
         <td>${r.title}</td>
-        <td><b>${r.score}</b></td>
+        <td><b>${parseFloat(r.score).toFixed(2)}</b></td>
         <td>${r.importance}</td>
         <td>${r.estimated_hours}</td>
         <td>${r.due_date || "-"}</td>
@@ -89,3 +80,15 @@ function showResults(results) {
       </tr>`;
   });
 }
+
+
+// Fetch saved priority results on page load
+window.onload = async () => {
+  const response = await fetch("http://127.0.0.1:8000/api/tasks/results/");
+  const data = await response.json();
+  if (data.length > 0) {
+    resultsData = data;
+    renderResults();
+  }
+};
+

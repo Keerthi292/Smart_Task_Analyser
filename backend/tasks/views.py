@@ -1,11 +1,29 @@
-from django.shortcuts import render
+# from django.http import JsonResponse, HttpResponse
+# from django.views.decorators.csrf import csrf_exempt
+# import json
+# from .scoring import score_task_list  # Your scoring logic
 
-import json
-from django.http import JsonResponse
+# @csrf_exempt
+# def analyze_tasks(request):
+#     if request.method != "POST":
+#         return JsonResponse({"error": "Only POST allowed"}, status=405)
+
+#     try:
+#         data = json.loads(request.body.decode("utf-8"))
+#         tasks = data.get("tasks", [])
+#     except:
+#         return JsonResponse({"error": "Invalid JSON input"}, status=400)
+
+#     results = score_task_list(tasks)  # Calculate scores
+#     return JsonResponse({"results": results}, safe=False)
+
+# def home(request):
+#     return HttpResponse("<h1>Task Analyzer API is Running 🚀</h1>")
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+import json
 from .scoring import score_task_list
-from django.http import HttpResponse
-
+from .models import AnalyzedTask
 
 @csrf_exempt
 def analyze_tasks(request):
@@ -13,13 +31,39 @@ def analyze_tasks(request):
         return JsonResponse({"error": "Only POST allowed"}, status=405)
 
     try:
-        data = json.loads(request.body.decode('utf-8'))
+        data = json.loads(request.body.decode("utf-8"))
         tasks = data.get("tasks", [])
     except:
         return JsonResponse({"error": "Invalid JSON input"}, status=400)
 
-    result = score_task_list(tasks)
-    return JsonResponse({"results": result}, safe=False)
+    results = score_task_list(tasks)
+
+    # save new results (append)
+    for r in results:
+        if r["score"] >= 8:
+            priority = "High Urgency"
+        elif r["score"] >= 5:
+            priority = "Medium Urgency"
+        else:
+            priority = "Low Urgency"
+
+        AnalyzedTask.objects.create(
+            title=r["title"],
+            importance=r["importance"],
+            estimated_hours=r["estimated_hours"],
+            due_date=r["due_date"] or None,
+            score=r["score"],
+            priority=priority
+        )
+
+    return JsonResponse({"results": results}, safe=False)
+
+
+# Fetch saved results
+def get_saved_results(request):
+    saved = list(AnalyzedTask.objects.all().values())
+    return JsonResponse(saved, safe=False)
 
 def home(request):
-    return HttpResponse("<h1>Task Analyzer API is Running </h1>")
+    return HttpResponse("<h1>Task Analyzer API is Running 🚀</h1>")
+
