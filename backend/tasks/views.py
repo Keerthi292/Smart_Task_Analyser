@@ -24,6 +24,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from .scoring import score_task_list
 from .models import AnalyzedTask
+from django.shortcuts import get_object_or_404
 
 @csrf_exempt
 def analyze_tasks(request):
@@ -63,6 +64,14 @@ def analyze_tasks(request):
 def get_saved_results(request):
     saved = list(AnalyzedTask.objects.all().values())
     return JsonResponse(saved, safe=False)
+
+
+
+@csrf_exempt
+def delete_task(request, id):
+    task = get_object_or_404(Task, id=id)
+    task.delete()
+    return JsonResponse({"message": "Deleted"})
 
 def home(request):
     return HttpResponse("<h1>Task Analyzer API is Running 🚀</h1>")

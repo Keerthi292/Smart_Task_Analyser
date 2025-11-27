@@ -77,6 +77,8 @@ function renderResults() {
         <td>${r.estimated_hours}</td>
         <td>${r.due_date || "-"}</td>
         <td style="color:${color}; font-weight:bold">${urgency}</td>
+        <td><button onclick="deleteResult('${r.id}')">
+            Delete</button></td>
       </tr>`;
   });
 }
@@ -91,4 +93,15 @@ window.onload = async () => {
     renderResults();
   }
 };
+async function deleteResult(id) {
+  if (!confirm("Are you sure you want to delete this task?")) return;
+
+  await fetch(`http://127.0.0.1:8000/api/tasks/delete/${id}/`, {
+    method: "DELETE"
+  });
+
+  // reload list
+  resultsData = resultsData.filter(r => r.id != id);
+  renderResults();
+}
 
