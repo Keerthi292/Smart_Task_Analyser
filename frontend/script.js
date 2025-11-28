@@ -110,6 +110,44 @@ async function deleteResult(id) {
   renderResults();
 }
 
+document.getElementById("suggestBtn").addEventListener("click", async () => {
+  const response = await fetch("http://127.0.0.1:8000/api/tasks/suggest/");
+  const data = await response.json();
+
+  renderSuggestions(data.top_tasks);
+});
+
+function renderSuggestions(list) {
+  const box = document.getElementById("suggestions");
+  box.innerHTML = ""; // clear old content
+
+  if (list.length === 0) {
+    box.innerHTML = "<p>No suggestions available.</p>";
+    return;
+  }
+
+  list.forEach(t => {
+    box.innerHTML += `
+      <div style="
+        background:#f5f5f5;
+        padding:12px;
+        margin:10px 0;
+        border-radius:6px;
+        border-left:5px solid #1890ff;
+      ">
+        <h3>${t.title}</h3>
+        <p><b>Score:</b> ${t.score}</p>
+        <p><b>Importance:</b> ${t.importance}</p>
+        <p><b>Estimated Hours:</b> ${t.estimated_hours}</p>
+        <p><b>Due Date:</b> ${t.due_date}</p>
+        <p><b>Priority:</b> ${t.priority}</p>
+        <p><b>Why Suggested:</b> ${t.explanation}</p>
+      </div>
+    `;
+  });
+}
+
+
 
 
 

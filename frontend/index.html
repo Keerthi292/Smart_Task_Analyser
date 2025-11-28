@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -48,6 +48,77 @@
     </thead>
     <tbody></tbody>
   </table>
+  <h2>Top 3 Suggested Tasks</h2>
+<div id="suggestions"></div>
+
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Task Analyzer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h1> Smart Task Analyzer</h1>
+
+  <!-- Task Input Form -->
+  <div class="task-form">
+    <input type="text" id="title" placeholder="Task Title" required>
+    <input type="number" id="importance" placeholder="Importance (1-10)" min="1" max="10">
+    <input type="number" id="hours" placeholder="Estimated Hours" min="0.5" step="0.5">
+    <input type="date" id="due">
+    <button id="addBtn">Add Task</button>
+  </div>
+
+  <!-- Task List Table -->
+  <h3>Task List</h3>
+  <table id="taskTable">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Importance</th>
+        <th>Hours</th>
+        <th>Due Date</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- Analyze Button -->
+  <button id="analyzeBtn" class="analyze">Analyze Priority</button>
+
+
+
+  <!-- Priority Results Table -->
+  <h3> Priority Results</h3>
+  <table id="resultTable">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Score</th>
+        <th>Importance</th>
+        <th>Hours</th>
+        <th>Due Date</th>
+        <th>Priority Level</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <!-- NEW Suggest Button -->
+  <button id="suggestBtn" class="suggest">Get Top 3 Suggestions</button>
+  
+  <!-- Suggestions Section -->
+  <div id="suggestions"></div>
 
 </div>
 
