@@ -66,9 +66,12 @@ function renderResults() {
     let urgency = r.priority || "";
     let color = "";
 
-    if (urgency === "High Urgency") color = "#ff4d4f";
-    else if (urgency === "Medium Urgency") color = "#faad14";
-    else color = "#52c41a";
+    if (urgency === "High Urgency") 
+        color = "#ff4d4f";
+    else if (urgency === "Medium Urgency") 
+        color = "#faad14";
+    else 
+        color = "#52c41a";
 
     tbody.innerHTML += `<tr>
         <td>${r.title}</td>
@@ -93,15 +96,20 @@ window.onload = async () => {
     renderResults();
   }
 };
+
 async function deleteResult(id) {
   if (!confirm("Are you sure you want to delete this task?")) return;
 
+  // Call backend API
   await fetch(`http://127.0.0.1:8000/api/tasks/delete/${id}/`, {
-    method: "DELETE"
+    method: "DELETE",
   });
 
-  // reload list
+  // Remove from frontend array
   resultsData = resultsData.filter(r => r.id != id);
   renderResults();
 }
+
+
+
 

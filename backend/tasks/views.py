@@ -31,33 +31,25 @@ def analyze_tasks(request):
     if request.method != "POST":
         return JsonResponse({"error": "Only POST allowed"}, status=405)
 
-    try:
-        data = json.loads(request.body.decode("utf-8"))
-        tasks = data.get("tasks", [])
-    except:
-        return JsonResponse({"error": "Invalid JSON input"}, status=400)
-
+    data = json.loads(request.body.decode('utf-8'))
+    tasks = data.get("tasks", [])
     results = score_task_list(tasks)
 
-    # save new results (append)
+    saved_results = []
     for r in results:
-        if r["score"] >= 8:
-            priority = "High Urgency"
-        elif r["score"] >= 5:
-            priority = "Medium Urgency"
-        else:
-            priority = "Low Urgency"
-
-        AnalyzedTask.objects.create(
+        task = AnalyzedTask.objects.create(
             title=r["title"],
             importance=r["importance"],
             estimated_hours=r["estimated_hours"],
             due_date=r["due_date"] or None,
             score=r["score"],
-            priority=priority
+            priority=r["priority"]
         )
+        r["id"] = task.id
+        saved_results.append(r)
 
-    return JsonResponse({"results": results}, safe=False)
+    return JsonResponse({"results": saved_results})
+
 
 
 # Fetch saved results
@@ -69,10 +61,10 @@ def get_saved_results(request):
 
 @csrf_exempt
 def delete_task(request, id):
-    task = get_object_or_404(Task, id=id)
-    task.delete()
-    return JsonResponse({"message": "Deleted"})
+    if request.method == "DELETE":
+        task = get_object_or_404(AnalyzedTask, id=id)  # Get the DB object
+        task.delete()                           # Delete from DB
+        return JsonResponse({"message": "Deleted"})
+    return JsonResponse({"error": "Invalid Method"}, status=405)
 
-def home(request):
-    return HttpResponse("<h1>Task Analyzer API is Running 🚀</h1>")
 
